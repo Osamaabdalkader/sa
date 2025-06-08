@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام إجازات المرضى</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div class="user-bar">
+    مرحباً، <span id="userName"></span>
+    <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
+  </div>
+
+  <div class="container">
+    <h1>إدخال بيانات إجازة مرضية</h1>
+    
+    <form id="dataEntryForm">
+      <div class="form-group">
+        <label for="serviceCode">كود الخدمة:</label>
+        <input type="text" id="serviceCode" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="patientId">رقم الهوية/الإقامة:</label>
+        <input type="text" id="patientId" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="patientName">اسم المريض:</label>
+        <input type="text" id="patientName" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="sickLeaveDate">تاريخ إصدار التقرير:</label>
+        <input type="date" id="sickLeaveDate" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="fromDate">تاريخ بداية الإجازة:</label>
+        <input type="date" id="fromDate" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="toDate">تاريخ نهاية الإجازة:</label>
+        <input type="date" id="toDate" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="duration">مدة الإجازة (أيام):</label>
+        <input type="number" id="duration" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="doctorName">اسم الطبيب:</label>
+        <input type="text" id="doctorName" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="jobTitle">المسمى الوظيفي:</label>
+        <input type="text" id="jobTitle" required>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">حفظ البيانات</button>
+        <a href="query.html" class="btn-query">عرض السجلات</a>
+      </div>
+    </form>
+    
+    <div id="message" class="message"></div>
+  </div>
+
+  <script src="entry.js"></script>
+  <script>
+    protectPage();
+    document.getElementById('userName').textContent = 
+      localStorage.getItem('userName') || 'مستخدم';
+      
+    // تعيين التاريخ الحالي كافتراضي
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('sickLeaveDate').value = today;
+  </script>
+</body>
+</html>
