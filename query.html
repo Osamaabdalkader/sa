@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>استعلام عن الإجازات المرضية</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div class="user-bar">
+    مرحباً، <span id="userName"></span>
+    <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
+  </div>
+
+  <div class="container">
+    <h1>سجلات الإجازات المرضية</h1>
+    
+    <div class="search-section">
+      <input type="text" id="searchInput" placeholder="ابحث باسم المريض أو رقم الهوية...">
+      <button id="searchBtn" class="btn-search">بحث</button>
+    </div>
+    
+    <div class="filters">
+      <div class="filter-group">
+        <label>من تاريخ:</label>
+        <input type="date" id="dateFrom">
+      </div>
+      <div class="filter-group">
+        <label>إلى تاريخ:</label>
+        <input type="date" id="dateTo">
+      </div>
+      <button id="filterBtn" class="btn-filter">تطبيق الفلتر</button>
+    </div>
+    
+    <div class="data-table-container">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>رقم الهوية</th>
+            <th>اسم المريض</th>
+            <th>بداية الإجازة</th>
+            <th>نهاية الإجازة</th>
+            <th>المدة (أيام)</th>
+            <th>اسم الطبيب</th>
+            <th>تاريخ الإدخال</th>
+          </tr>
+        </thead>
+        <tbody id="dataBody">
+          <!-- البيانات ستظهر هنا -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="query.js"></script>
+  <script>
+    protectPage();
+    document.getElementById('userName').textContent = 
+      localStorage.getItem('userName') || 'مستخدم';
+  </script>
+</body>
+</html>
