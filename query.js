@@ -1,82 +1,78 @@
-async function loadSickLeaves() {
+async function loadSickLeave() {
+  const serviceCode = document.getElementById('serviceCode').value.trim();
+  const patientId = document.getElementById('patientId').value.trim();
+  const messageDiv = document.getElementById('message');
+  const resultsContainer = document.getElementById('resultsContainer');
+  const tbody = document.getElementById('dataBody');
+  
+  // إخفاء النتائج السابقة والرسائل
+  resultsContainer.style.display = 'none';
+  messageDiv.style.display = 'none';
+  tbody.innerHTML = '';
+  
+  // التحقق من إدخال الحقلين معاً
+  if (!serviceCode || !patientId) {
+    showMessage('message', 'يجب إدخال كود الخدمة ورقم الهوية معاً', false);
+    return;
+  }
+
   try {
     const userId = localStorage.getItem('userId');
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const dateFrom = document.getElementById('dateFrom').value;
-    const dateTo = document.getElementById('dateTo').value;
-    
-    const snapshot = await db.ref(`sickLeaves/${userId}`).orderByChild('timestamp').once('value');
-    const tbody = document.getElementById('dataBody');
-    tbody.innerHTML = '';
+    const snapshot = await db.ref(`sickLeaves/${userId}`)
+      .orderByChild('serviceCode')
+      .equalTo(serviceCode)
+      .once('value');
     
     if (!snapshot.exists()) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">لا توجد سجلات</td></tr>';
+      showMessage('message', 'لا توجد نتائج مطابقة', false);
       return;
     }
     
-    let records = [];
+    let found = false;
+    
     snapshot.forEach(child => {
       const record = child.val();
-      records.push({
-        key: child.key,
-        ...record
-      });
+      
+      // التحقق من مطابقة رقم الهوية أيضاً
+      if (record.patientId === patientId) {
+        found = true;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${record.serviceCode}</td>
+          <td>${record.patientId}</td>
+          <td>${record.patientName}</td>
+          <td>${record.sickLeaveDate}</td>
+          <td>${record.fromDate}</td>
+          <td>${record.toDate}</td>
+          <td>${record.duration} يوم</td>
+          <td>${record.doctorName}</td>
+          <td>${record.jobTitle}</td>
+        `;
+        tbody.appendChild(row);
+      }
     });
     
-    // تطبيق الفلاتر
-    records = records.filter(record => {
-      // فلترة البحث
-      const matchesSearch = !searchTerm || 
-        record.patientName.toLowerCase().includes(searchTerm) || 
-        record.patientId.toLowerCase().includes(searchTerm);
-      
-      // فلترة التاريخ
-      const matchesDate = (!dateFrom || record.fromDate >= dateFrom) && 
-                         (!dateTo || record.toDate <= dateTo);
-      
-      return matchesSearch && matchesDate;
-    });
-    
-    // عرض النتائج
-    if (records.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">لا توجد نتائج مطابقة</td></tr>';
-      return;
+    if (found) {
+      resultsContainer.style.display = 'block';
+    } else {
+      showMessage('message', 'لا توجد نتائج مطابقة', false);
     }
     
-    // الترتيب من الأحدث إلى الأقدم
-    records.reverse().forEach(record => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${record.patientId}</td>
-        <td>${record.patientName}</td>
-        <td>${record.fromDate}</td>
-        <td>${record.toDate}</td>
-        <td>${record.duration} يوم</td>
-        <td>د. ${record.doctorName}</td>
-        <td>${formatDate(record.timestamp)}</td>
-      `;
-      tbody.appendChild(row);
-    });
-    
   } catch (error) {
-    console.error('حدث خطأ في تحميل البيانات:', error);
-    showMessage('message', 'حدث خطأ في تحميل البيانات: ' + error.message, false);
+    showMessage('message', 'حدث خطأ: ' + error.message, false);
   }
 }
 
-// أحداث البحث والفلترة
-document.getElementById('searchBtn').addEventListener('click', loadSickLeaves);
-document.getElementById('filterBtn').addEventListener('click', loadSickLeaves);
+// أحداث الاستعلام
+document.getElementById('searchBtn').addEventListener('click', loadSickLeave);
+document.getElementById('clearBtn').addEventListener('click', () => {
+  document.getElementById('serviceCode').value = '';
+  document.getElementById('patientId').value = '';
+  document.getElementById('resultsContainer').style.display = 'none';
+  document.getElementById('message').style.display = 'none';
+});
 
-// تحميل البيانات عند فتح الصفحة
-window.addEventListener('DOMContentLoaded', () => {
-  loadSickLeaves();
-  
-  // تعيين التواريخ الافتراضية (الشهر الحالي)
-  const today = new Date();
-  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  
-  document.getElementById('dateFrom').value = firstDay.toISOString().split('T')[0];
-  document.getElementById('dateTo').value = lastDay.toISOString().split('T')[0];
+// تفعيل البحث عند الضغط على انتر
+document.getElementById('patientId').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') loadSickLeave();
 });
