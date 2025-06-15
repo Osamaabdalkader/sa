@@ -38,7 +38,7 @@ document.getElementById('dataEntryForm').addEventListener('submit', async (e) =>
     // إعادة تعيين النموذج
     document.getElementById('dataEntryForm').reset();
     
-    // تعيين التاريخ الحالي كافتراضي
+    // تعيين التاريخ الحالي كافتراضي لتاريخ التقرير
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('sickLeaveDate').value = today;
     
