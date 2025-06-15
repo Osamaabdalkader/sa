@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    
+    
+    
+    
+    
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="origin-trial" content="A/kargTFyk8MR5ueravczef/wIlTkbVk1qXQesp39nV+xNECPdLBVeYffxrM8TmZT6RArWGQVCJ0LRivD7glcAUAAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IkRpc2FibGVUaGlyZFBhcnR5U3RvcmFnZVBhcnRpdGlvbmluZzIiLCJleHBpcnkiOjE3NDIzNDIzOTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,12 +14,9 @@
     
     <title>صحة - منصة الخدمات الصحية</title>
     
-    
-      <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script src="firebase-config.js"></script>
-  <script src="app.js"></script>
-    
+       <!-- Firebase scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
     
     
@@ -869,6 +871,24 @@
     </style>
     
     
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyABC123xyz",
+            authDomain: "your-project.firebaseapp.com",
+            databaseURL: "https://your-project.firebaseio.com",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abc123xyz456"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
+</head>
+<body>
 
     <div class="d-lg-none d-xl-none justify-content-end menu">
         <button id="menu-toggle" aria-controls="responsive-navbar-nav" type="button" 
@@ -978,7 +998,7 @@
                         <div class="results-inquiery row" id="resultsDiv">
                             <div class="col-md-6">
                                 <span>الاسم:</span>
-                                <h6 id="patientName"></h6>
+                                <h6 id="patientname"></h6>
                             </div>
                             <div class="col-md-6">
                                 <span>تاريخ إصدار تقرير الإجازة:</span>
@@ -986,11 +1006,11 @@
                             </div>
                             <div class="col-md-6">
                                 <span>تبدأ من:</span>
-                                <h6 id="fromDate"></h6>
+                                <h6 id="from1"></h6>
                             </div>
                             <div class="col-md-6">
                                 <span>وحتى:</span>
-                                <h6 id="toDate"></h6>
+                                <h6 id="to1"></h6>
                             </div>
                             <div class="col-md-6">
                                 <span>المدة بالأيام:</span>
@@ -998,11 +1018,11 @@
                             </div>
                             <div class="col-md-6">
                                 <span>اسم الطبيب:</span>
-                                <h6 id="doctorName"></h6>
+                                <h6 id="doctorname"></h6>
                             </div>
                             <div class="col-md-6">
                                 <span>المسمى الوظيفي:</span>
-                                <h6 id="jobTitle"></h6>
+                                <h6 id="jobtitle"></h6>
                             </div>
                             </div>
                         
@@ -1120,7 +1140,29 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // معالجة الاستعلام (Inquiry Handling)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        // معالجة الاستعلام
         document.addEventListener("DOMContentLoaded", function() {
             const submitButton = document.getElementById('submit');
             const toggleButton = document.getElementById('toggleButton');
@@ -1130,57 +1172,68 @@
             const alertError = document.getElementById('alerterror');
             const alertError2 = document.getElementById('alerterror2');
 
-            function handleInquiry() {
+            async function handleInquiry() {
                 const serviceCode = serviceCodeInput.value.trim();
                 const patientId = patientIdInput.value.trim();
 
-                if (serviceCode && patientId) {
-                    let patientName, sickLeaveDate, fromDate, toDate, duration, doctorName, jobTitle;
-                    
-               
-                    const key = `${serviceCode}_${patientId}`;
-                    const result = inquiries[key];
-                    
-                    if (result) {
-                        [
-                            patientName, 
-                            sickLeaveDate, 
-                            fromDate, 
-                            toDate, 
-                            duration, 
-                            doctorName, 
-                            jobTitle
-                        ] = result;
-                        
-                        
-                        document.getElementById('patientName').textContent = patientName;
-                        document.getElementById('sickLeaveDate').textContent = sickLeaveDate;
-                        document.getElementById('fromDate').textContent = fromDate;
-                        document.getElementById('toDate').textContent = toDate;
-                        document.getElementById('duration').textContent = duration;
-                        document.getElementById('doctorName').textContent = doctorName;
-                        document.getElementById('jobTitle').textContent = jobTitle;
+                if (!serviceCode || !patientId) {
+                    alertError.style.display = 'block';
+                    alertError2.style.display = 'none';
+                    resultsDiv.style.display = 'none';
+                    return;
+                }
 
+                try {
+                    // البحث في Firebase
+                    const snapshot = await database.ref('sickLeaves')
+                        .orderByChild('serviceCode')
+                        .equalTo(serviceCode)
+                        .once('value');
 
-                        resultsDiv.style.display = 'block';
+                    if (!snapshot.exists()) {
+                        alertError2.style.display = 'block';
+                        resultsDiv.style.display = 'none';
                         alertError.style.display = 'none';
-                        alertError2.style.display = 'none';
-                        submitButton.style.display = 'none';
-                        toggleButton.style.display = 'inline-block';
-                    } else {
+                        return;
+                    }
+
+                    let found = false;
+                    snapshot.forEach(child => {
+                        const record = child.val();
+                        
+                        if (record.patientId === patientId) {
+                            found = true;
+                            // تعبئة البيانات
+                            document.getElementById('patientname').textContent = record.patientName;
+                            document.getElementById('sickleavedate').textContent = record.sickLeaveDate;
+                            document.getElementById('from1').textContent = record.fromDate;
+                            document.getElementById('to1').textContent = record.toDate;
+                            document.getElementById('duration').textContent = record.duration;
+                            document.getElementById('doctorname').textContent = record.doctorName;
+                            document.getElementById('jobtitle').textContent = record.jobTitle;
+
+                            resultsDiv.style.display = 'block';
+                            alertError.style.display = 'none';
+                            alertError2.style.display = 'none';
+                            submitButton.style.display = 'none';
+                            toggleButton.style.display = 'inline-block';
+                        }
+                    });
+
+                    if (!found) {
                         alertError2.style.display = 'block';
                         resultsDiv.style.display = 'none';
                         alertError.style.display = 'none';
                     }
-                } else {
-                    alertError.style.display = 'block';
-                    alertError2.style.display = 'none';
-                    resultsDiv.style.display = 'none';
+                    
+                } catch (error) {
+                    console.error('حدث خطأ: ', error);
+                    alertError2.style.display = 'block';
                 }
             }
 
             submitButton.addEventListener('click', handleInquiry);
-            toggleButton.addEventListener('click', () => location.href = "https://seha-sa-edumertefy.infy.uk");
+                        toggleButton.addEventListener('click', () => location.href = "https://seha-sa-edumertefy.infy.uk");
         });
 
         // تحديث الصفحة التلقائي (اختياري)
@@ -1190,7 +1243,8 @@
                 location.reload();
             }, 3000);
         }
-    </script>
+
+        </script>
 
     <script>
 
