@@ -12,7 +12,10 @@
   
   
   
-  <title>استعلام عن الإجازات المرضية</title>
+  <title>صحة - منصة الخدمات الصحية</title>
+    
+  
+  
   <link rel="stylesheet" href="style.css">
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -50,10 +53,85 @@
   
 </head>
 <body>
-  <div class="user-bar">
-    مرحباً، <span id="userName"></span>
-    <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
-  </div>
+    
+    
+    
+    <div id="root">
+        <div class="App">
+            <header>
+                <nav class="header navbar navbar-expand-lg navbar-light">
+                    <div class="nav-container">
+                        <a class="navbar-brand" href="https://www.seha.sa/#/">
+                            <img src="https://www.seha.sa/static/media/seha_logo.4dde29e5c4f38890ccf9787220bcc5be.svg" alt="logo" class="logo">
+                            </a>
+                        <div class="d-lg-none d-xl-none justify-content-end menu">
+                            <button aria-controls="responsive-navbar-nav" type="button" aria-label="Toggle navigation" class="d-inline-flex menu-img navbar-toggler collapsed">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                        </div>
+                        <div class="white justify-content-between navbar-collapse collapse" id="responsive-navbar-nav">
+                            <div class="justify-content-between navbar-nav">
+                            </div>
+                            <div class="justify-content-between navbar-nav">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="top-button" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14.4" height="18.503" viewBox="0 0 14.4 18.503">
+                            <path id="arrow-up-c" d="M8.862,11.37,14.381,6.1a1.7,1.7,0,0,1,2.355,0l5.54,5.272a1.555,1.555,0,0,1,0,2.271,1.738,1.738,0,0,1-2.376,0l-2.649-2.528V22.519a1.684,1.684,0,0,1-3.364,0V11.113l-2.649,2.534a1.738,1.738,0,0,1-2.376,0,1.561,1.561,0,0,1,0-2.276Z" transform="translate(-8.369 -5.625)" fill="#00a1c9"></path>
+                        </svg>
+                        </button>
+                </nav>
+                
+                <button class="menu-toggle">
+                  <i class="fas fa-bars"></i>
+                  <i class="fas fa-times"></i>
+                  </button>
+
+                <div class="sidebar-overlay"></div>
+                <div class="sidebar">
+                  <div class="sidebar-header">
+                  </div>
+                  
+  
+  <ul class="sidebar-menu">
+    <li><a href="https://www.seha.sa/ui#/"> الرئيسية</a></li>
+    <li><a href="https://www.seha.sa/#/services">الخدمات</a></li>
+    <li><a href="https://www.seha.sa/#/inquiries"> الاستعلامات</a></li>
+    <li><a href="https://www.seha.sa/ui#/faq"> الأسئلة الشائعة</a></li>
+    <li><a href="https://www.seha.sa/ui#/contactUs"> تواصل معنا</a></li>
+    <li><a href="https://www.seha.sa/#/iamredirection/1">إنشاء حساب</a></li>
+  </ul>
+  
+
+                  <div class="login-btn">
+                 <i class="fas fa-user"></i> 
+                      <a href="https://www.seha.sa/#/account/login"> تسجيل الدخول </a>
+                      </div>
+                      
+                  </div>
+                </div>
+            </header>
+
+
+
+
+
+
+
+
+
+
+
+            <main class="inner-page inquiries-container">
+                <h1 class="heading">الإجازات المرضية</h1>
+                <p class="sub-heading">
+                    خدمة الاستعلام عن الإجازات المرضية تتيح لك الاستعلام عن حالة طلبك للإجازة ويمكنك طباعتها عن طريق تطبيق صحتي
+                </p>
+               
+               
+              
 
   <div class="container">
     <h1>استعلام عن الإجازات المرضية</h1>
@@ -126,6 +204,104 @@
     </div>
   </div>
 
+
+            
+    
+            
+            
+            
+            <footer class="mini-footer-container container-fluid">
+             
+             <div class="img-logo">
+                <img src="https://www.seha.sa/static/media/seha_logo.4dde29e5c4f38890ccf9787220bcc5be.svg" alt="logo" class="logo">
+              </div>
+              
+              <p class="sub-heading-footer">
+                    منصة صحة  تخدم جميع المنشأت الطبية من خلال تقديم الخدمات الصحية إلكترونياً لجميع المنشأت الطبية وتسعى الى توحيد وأتمته الاجراءات والخدمات بما في دوره رفع جودة الاداء وخفض التكاليف 
+                </p>
+              
+              
+                <div class="footer-links-section">
+                  <div class=" main-list">
+                      <a href="https://www.seha.sa/ui#/">القائمة الرئيسية</a>
+                  </div>
+                  
+                    <ul class="main-links">
+                        <li><a href="https://www.seha.sa/#/services">الخدمات</a></li>
+                        <li><a href="https://www.seha.sa/#/inquiries">     الاستعلامات    </a></li> 
+                        <li><a href="https://www.seha.sa/ui#/faq">الأسئلة الشائعة</a></li>
+                        <li><a href="https://www.seha.sa/ui#/contactUs">تواصل معنا</a></li>
+                        </ul>
+                </div>
+
+                <div class="contact-info-blocke">
+                    <h>تواصل معنا</h>
+                </div>
+
+                <div class="footer-contact-details-and-socials">
+                    <div class="contact-info-block">
+  <div class="contact-detail-item">
+      <i class="fas fa-phone-alt"></i>
+      <a href="tel:920002005">920002005</a>
+    </div>
+    <div class="contact-detail-item">
+      <i class="fas fa-envelope"></i>
+      <a href="mailto:support@seha.sa">support@seha.sa</a>
+    </div>
+    <div class="contact-detail-item">
+      <i class="fab fa-whatsapp"></i>
+      <a href="https://wa.me/920002005" target="_blank">920002005</a>
+    </div>
+                    </div>
+                
+                 
+                 
+                 
+                    <div class="socials-and-logos-block">
+                        <div class="brand-logos-vertical">
+                            <img class="logo" src="https://www.seha.sa/static/media/lean-logo.47f1c2c4f559aab0fc8472beba56bb76.svg" alt="Lean Logo">
+                            <img class="logo" src="https://www.seha.sa/static/media/MOH-logo.3721a12f98819dbb30527088a659b864.svg" alt="MOH Logo">
+                        </div>
+                    </div>
+                </div>
+                
+                                        <div class="contact-hours">
+                            <p>أوقات العمل: الأحد حتى الخميس 8 ص - 11 م</p>
+                        </div>
+                
+                <div class="footer-socials-icons">
+                    <a href="https://www.youtube.com/@sehaservices" target="_blank" rel="noreferrer" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <button><a href="https://twitter.com/seha_services"><svg width="14" height="14" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="#ffffff" d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"></path></svg></a></button>
+                </div>
+        
+                <div class="footer-note-wrapper">
+                    <p>منصة صحة معتمدة من قبل وزارة الصحة © 2025</p>
+                    <div class="footer-policy-links">
+                        <a>سياسة الخصوصية وشروط الإستخدام</a>
+                        <span class="separator">|</span>
+                        <a class="" href="https://www.seha.sa/Content/LandingPages/UserManual.pdf" target="_blank">دليل الاستخدام</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
   <script src="query.js"></script>
   <script>
     protectPage();
@@ -133,4 +309,4 @@
       localStorage.getItem('userName') || 'مستخدم';
   </script>
 </body>
-  </html>
+                         </html>
