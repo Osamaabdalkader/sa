@@ -383,7 +383,7 @@
             outline: none;
         }
         
-        .results-inquiery {
+        .resultsDiv {
             background: #F7F7F7; 
             padding: 20px;
             border: 3px solid #F2F2F2;
@@ -395,13 +395,13 @@
             
         }
 
-        .results-inquiery span {
+        .resultsDiv span {
             color: #000;
             font-size: 16px;
                         font-weigt:1000  !important ;
         }
 
-        .results-inquiery h6 {
+        .resultsDiv strong {
             color:#666;
             font-size:14px;font-weigt:300  !important ;
             margin: 5px 0 15px;
@@ -458,14 +458,14 @@
              text-decoration: none;
         }
 
-        .alert {
+        .message error{
             padding: 12px 15px;
             border-radius: 6px;
             margin-bottom: 15px;
             display: none;
         }
 
-        .alert-danger {
+        .message error i {
             background-color: #f8d7da;
             color: var(--error-color);
             border: 1px solid #f5c6cb;
@@ -983,18 +983,14 @@
               
 
   <div class="container">
-    <h1>استعلام عن الإجازات المرضية</h1>
-    
+
     <div class="search-section">
-      <div class="form-group">
-        <label for="normalizedservicecode">كود الخدمة:</label>
-        <input type="text" id="normalizedservicecode" placeholder="أدخل كود الخدمة" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="patientid">رقم الهوية/الإقامة:</label>
-        <input type="text" id="patientid" placeholder="أدخل رقم الهوية" required>
-      </div>
+                        <div class="form-group">
+                            <input class="form-control" type="text" maxlength="14" placeholder="رمز الخدمة" id="normalizedservicecode">
+                            </div>
+                        <div class="form-group">
+                            <input class="form-control" type="text" maxlength="12" pattern="d*" placeholder="رقم الهوية / الإقامة" id="patientid">
+                            </div>
       
       <div class="form-actions">
         <button id="submit" class="btn-submit">استعلام</button>
@@ -1052,6 +1048,8 @@
       </div>
     </div>
   </div>
+  
+  </main>
             
             <footer class="mini-footer-container container-fluid">
              
