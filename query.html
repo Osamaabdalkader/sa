@@ -16,72 +16,73 @@
     <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
   </div>
 
-
-
   <div class="container">
     <h1>استعلام عن الإجازات المرضية</h1>
     
     <div class="search-section">
       <div class="form-group">
-        <label for="serviceCode">كود الخدمة:</label>
-        <input type="text" id="serviceCode" placeholder="أدخل كود الخدمة" required>
+        <label for="normalizedservicecode">كود الخدمة:</label>
+        <input type="text" id="normalizedservicecode" placeholder="أدخل كود الخدمة" required>
       </div>
       
       <div class="form-group">
-        <label for="patientId">رقم الهوية/الإقامة:</label>
-        <input type="text" id="patientId" placeholder="أدخل رقم الهوية" required>
+        <label for="patientid">رقم الهوية/الإقامة:</label>
+        <input type="text" id="patientid" placeholder="أدخل رقم الهوية" required>
       </div>
       
       <div class="form-actions">
-        <button id="searchBtn" class="btn-submit">استعلام</button>
-        <button id="clearBtn" class="btn-clear">مسح النتائج</button>
+        <button id="submit" class="btn-submit">استعلام</button>
+        <button id="toggleButton" class="btn-submit" style="display: none;">إدخال جديد</button>
       </div>
     </div>
     
-    <div id="message" class="message"></div>
+    <div id="alerterror" class="message error" style="display: none;">
+      يجب إدخال كود الخدمة ورقم الهوية معاً
+    </div>
+    <div id="alerterror2" class="message error" style="display: none;">
+      لا توجد نتائج مطابقة
+    </div>
     
-    <!-- بداية التعديل: عرض البيانات كنصوص عادية -->
-    <div id="resultsContainer" style="display:none;">
+    <div id="resultsDiv" style="display: none; margin-top: 30px;">
       <div class="result-header">
         <h2>نتيجة الاستعلام</h2>
-        <button id="newEntryBtn" class="btn-submit">إدخال جديد</button>
       </div>
       
       <div class="result-field">
         <strong>كود الخدمة:</strong>
-        <span id="result-serviceCode"></span>
+        <span id="servicecodeResult"></span>
       </div>
       <div class="result-field">
         <strong>رقم الهوية/الإقامة:</strong>
-        <span id="result-patientId"></span>
+        <span id="patientidResult"></span>
       </div>
       <div class="result-field">
         <strong>اسم المريض:</strong>
-        <span id="result-patientName"></span>
+        <span id="patientname"></span>
       </div>
       <div class="result-field">
         <strong>تاريخ إصدار التقرير:</strong>
-        <span id="result-sickLeaveDate"></span>
+        <span id="sickleavedate"></span>
       </div>
       <div class="result-field">
         <strong>تاريخ بداية الإجازة:</strong>
-        <span id="result-fromDate"></span>
+        <span id="from1"></span>
       </div>
       <div class="result-field">
         <strong>تاريخ نهاية الإجازة:</strong>
-        <span id="result-toDate"></span>
+        <span id="to1"></span>
       </div>
       <div class="result-field">
         <strong>مدة الإجازة (أيام):</strong>
-        <span id="result-duration"></span>
+        <span id="duration"></span>
       </div>
       <div class="result-field">
         <strong>اسم الطبيب:</strong>
-        <span id="result-doctorName"></span>
+        <span id="doctorname"></span>
       </div>
       <div class="result-field">
         <strong>المسمى الوظيفي:</strong>
-        <span id="result-jobTitle"></span>
+        <span id="jobtitle"></span>
       </div>
     </div>
   </div>
@@ -93,4 +94,4 @@
       localStorage.getItem('userName') || 'مستخدم';
   </script>
 </body>
-        </html>
+  </html>
