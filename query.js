@@ -1,78 +1,77 @@
-async function loadSickLeave() {
-  const serviceCode = document.getElementById('serviceCode').value.trim();
-  const patientId = document.getElementById('patientId').value.trim();
-  const messageDiv = document.getElementById('message');
-  const resultsContainer = document.getElementById('resultsContainer');
-  
-  // إخفاء النتائج السابقة والرسائل
-  resultsContainer.style.display = 'none';
-  messageDiv.style.display = 'none';
-  
-  // التحقق من إدخال الحقلين معاً
-  if (!serviceCode || !patientId) {
-    showMessage('message', 'يجب إدخال كود الخدمة ورقم الهوية معاً', false);
-    return;
-  }
+document.addEventListener("DOMContentLoaded", function() {
+    const submitButton = document.getElementById('submit');
+    const toggleButton = document.getElementById('toggleButton');
+    const serviceCodeInput = document.getElementById('normalizedservicecode');
+    const patientIdInput = document.getElementById('patientid');
+    const resultsDiv = document.getElementById('resultsDiv');
+    const alertError = document.getElementById('alerterror');
+    const alertError2 = document.getElementById('alerterror2');
 
-  try {
-    const userId = localStorage.getItem('userId');
-    const snapshot = await db.ref(`sickLeaves/${userId}`)
-      .orderByChild('serviceCode')
-      .equalTo(serviceCode)
-      .once('value');
-    
-    if (!snapshot.exists()) {
-      showMessage('message', 'لا توجد نتائج مطابقة', false);
-      return;
+    async function handleInquiry() {
+        const serviceCode = serviceCodeInput.value.trim();
+        const patientId = patientIdInput.value.trim();
+
+        if (serviceCode && patientId) {
+            try {
+                const userId = localStorage.getItem('userId');
+                const snapshot = await db.ref(`sickLeaves/${userId}`)
+                    .orderByChild('serviceCode')
+                    .equalTo(serviceCode)
+                    .once('value');
+
+                let found = false;
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const record = child.val();
+                        if (record.patientId === patientId) {
+                            found = true;
+                            // تعبئة البيانات في العناصر
+                            document.getElementById('servicecodeResult').textContent = serviceCode;
+                            document.getElementById('patientidResult').textContent = patientId;
+                            document.getElementById('patientname').textContent = record.patientName;
+                            document.getElementById('sickleavedate').textContent = record.sickLeaveDate;
+                            document.getElementById('from1').textContent = record.fromDate;
+                            document.getElementById('to1').textContent = record.toDate;
+                            document.getElementById('duration').textContent = `${record.duration} يوم`;
+                            document.getElementById('doctorname').textContent = record.doctorName;
+                            document.getElementById('jobtitle').textContent = record.jobTitle;
+
+                            resultsDiv.style.display = 'block';
+                            alertError.style.display = 'none';
+                            alertError2.style.display = 'none';
+                            submitButton.style.display = 'none';
+                            toggleButton.style.display = 'inline-block';
+                        }
+                    });
+                }
+
+                if (!found) {
+                    alertError2.style.display = 'block';
+                    resultsDiv.style.display = 'none';
+                    alertError.style.display = 'none';
+                }
+            } catch (error) {
+                alertError2.style.display = 'block';
+                resultsDiv.style.display = 'none';
+                alertError.style.display = 'none';
+            }
+        } else {
+            alertError.style.display = 'block';
+            alertError2.style.display = 'none';
+            resultsDiv.style.display = 'none';
+        }
     }
-    
-    let found = false;
-    
-    snapshot.forEach(child => {
-      const record = child.val();
-      
-      // التحقق من مطابقة رقم الهوية أيضاً
-      if (record.patientId === patientId) {
-        found = true;
-        // تعبئة البيانات في العناصر
-        document.getElementById('result-serviceCode').textContent = record.serviceCode;
-        document.getElementById('result-patientId').textContent = record.patientId;
-        document.getElementById('result-patientName').textContent = record.patientName;
-        document.getElementById('result-sickLeaveDate').textContent = record.sickLeaveDate;
-        document.getElementById('result-fromDate').textContent = record.fromDate;
-        document.getElementById('result-toDate').textContent = record.toDate;
-        document.getElementById('result-duration').textContent = `${record.duration} يوم`;
-        document.getElementById('result-doctorName').textContent = record.doctorName;
-        document.getElementById('result-jobTitle').textContent = record.jobTitle;
-        
-        resultsContainer.style.display = 'block';
-      }
+
+    submitButton.addEventListener('click', handleInquiry);
+    toggleButton.addEventListener('click', () => {
+        window.location.href = "index.html"; // الانتقال إلى صفحة الإدخال
     });
-    
-    if (!found) {
-      showMessage('message', 'لا توجد نتائج مطابقة', false);
-    }
-    
-  } catch (error) {
-    showMessage('message', 'حدث خطأ: ' + error.message, false);
-  }
-}
 
-// أحداث الاستعلام
-document.getElementById('searchBtn').addEventListener('click', loadSickLeave);
-document.getElementById('clearBtn').addEventListener('click', () => {
-  document.getElementById('serviceCode').value = '';
-  document.getElementById('patientId').value = '';
-  document.getElementById('resultsContainer').style.display = 'none';
-  document.getElementById('message').style.display = 'none';
-});
-
-// زر الإدخال الجديد
-document.getElementById('newEntryBtn').addEventListener('click', () => {
-  window.location.href = 'index.html';
-});
-
-// تفعيل البحث عند الضغط على انتر
-document.getElementById('patientId').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') loadSickLeave();
+    // تفعيل البحث عند الضغط على انتر في حقل رقم الهوية
+    patientIdInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleInquiry();
+        }
+    });
 });
