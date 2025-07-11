@@ -143,6 +143,23 @@
             100% { transform: rotate(360deg); }
         }
 
+        .progress-bar {
+            width: 80%;
+            max-width: 300px;
+            height: 10px;
+            background: #555;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
         /* التنسيقات العامة */
         :root {
             --primary-color: #4361ee;
@@ -291,6 +308,18 @@
             z-index: 1000;
             overflow-y: auto;
             padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
         }
 
         /* صفحة التوثيق */
@@ -612,7 +641,12 @@
     <!-- صفحة إنشاء منشور جديد -->
     <div id="add-post-page" class="page hidden">
         <div class="container">
-            <h2>إنشاء منشور جديد</h2>
+            <div class="page-header">
+                <h2 class="page-title">إنشاء منشور جديد</h2>
+                <button id="close-add-post" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
             
             <div id="add-post-form">
                 <div class="form-group">
@@ -662,7 +696,12 @@
     <!-- صفحة حساب المستخدم -->
     <div id="profile-page" class="page hidden">
         <div class="container">
-            <h2>حسابي</h2>
+            <div class="page-header">
+                <h2 class="page-title">حسابي</h2>
+                <button id="close-profile" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
             <div id="user-info">
                 <!-- معلومات المستخدم ستظهر هنا -->
             </div>
@@ -674,6 +713,9 @@
     <div id="loading-overlay" class="loading-overlay hidden">
         <div class="spinner"></div>
         <p>جاري النشر...</p>
+        <div class="progress-bar">
+            <div class="progress" id="upload-progress"></div>
+        </div>
     </div>
 
     <!-- شريط التذييل -->
@@ -724,7 +766,7 @@
         import { 
             getStorage, 
             ref as storageRef, 
-            uploadBytes, 
+            uploadBytesResumable,
             getDownloadURL 
         } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js";
 
@@ -753,6 +795,7 @@
         const addPostPage = document.getElementById('add-post-page');
         const profilePage = document.getElementById('profile-page');
         const loadingOverlay = document.getElementById('loading-overlay');
+        const uploadProgress = document.getElementById('upload-progress');
 
         const authMessage = document.getElementById('auth-message');
         const loginForm = document.getElementById('login-form');
@@ -769,6 +812,8 @@
         const addPostIcon = document.getElementById('add-post-icon');
         const homeIcon = document.getElementById('home-icon');
         const closeAuthBtn = document.getElementById('close-auth');
+        const closeAddPostBtn = document.getElementById('close-add-post');
+        const closeProfileBtn = document.getElementById('close-profile');
 
         // عناصر رفع الصورة
         const postImageInput = document.getElementById('post-image');
@@ -907,7 +952,7 @@
             });
         });
 
-        // نشر منشور جديد - الإصدار المصحح
+        // نشر منشور جديد - الإصدار المصحح مع شريط التقدم
         publishBtn.addEventListener('click', async e => {
             e.preventDefault();
             
@@ -932,16 +977,37 @@
             try {
                 // إظهار شاشة التحميل
                 loadingOverlay.classList.remove('hidden');
+                uploadProgress.style.width = '0%';
                 
-                // 1. رفع الصورة أولاً إذا وجدت
                 let imageUrl = null;
                 if (imageFile) {
+                    // استخدام uploadBytesResumable لتتبع التقدم
                     const fileRef = storageRef(storage, 'post_images/' + Date.now() + '_' + imageFile.name);
-                    const snapshot = await uploadBytes(fileRef, imageFile);
-                    imageUrl = await getDownloadURL(snapshot.ref);
+                    const uploadTask = uploadBytesResumable(fileRef, imageFile);
+                    
+                    // انتظار اكتمال الرفع مع تحديث شريط التقدم
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed',
+                            (snapshot) => {
+                                // تحديث شريط التقدم
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                uploadProgress.style.width = progress + '%';
+                            },
+                            (error) => {
+                                reject(error);
+                            },
+                            () => {
+                                // الرفع اكتمل بنجاح
+                                resolve();
+                            }
+                        );
+                    });
+                    
+                    // الحصول على رابط التحميل بعد اكتمال الرفع
+                    imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
                 }
                 
-                // 2. الحصول على بيانات المستخدم
+                // الحصول على بيانات المستخدم
                 const userRef = ref(database, 'users/' + user.uid);
                 const userSnapshot = await new Promise((resolve) => {
                     onValue(userRef, (snapshot) => resolve(snapshot), { onlyOnce: true });
@@ -953,7 +1019,7 @@
                 
                 const userData = userSnapshot.val();
                 
-                // 3. إنشاء كائن المنشور
+                // إنشاء كائن المنشور
                 const postData = {
                     title: title,
                     description: description,
@@ -967,10 +1033,10 @@
                     imageUrl: imageUrl || ''
                 };
                 
-                // 4. حفظ المنشور في قاعدة البيانات
+                // حفظ المنشور في قاعدة البيانات
                 await push(ref(database, 'posts'), postData);
                 
-                // 5. إخفاء شاشة التحميل وإظهار الرسالة
+                // إخفاء شاشة التحميل وإظهار الرسالة
                 loadingOverlay.classList.add('hidden');
                 alert('تم نشر المنشور بنجاح!');
                 resetAddPostForm();
@@ -991,25 +1057,29 @@
                 // عرض صفحة حساب المستخدم
                 const userRef = ref(database, 'users/' + user.uid);
                 onValue(userRef, (snapshot) => {
-                    const userData = snapshot.val();
-                    userInfo.innerHTML = `
-                        <div class="user-detail">
-                            <i class="fas fa-user"></i>
-                            <span>${userData.name}</span>
-                        </div>
-                        <div class="user-detail">
-                            <i class="fas fa-envelope"></i>
-                            <span>${userData.email}</span>
-                        </div>
-                        <div class="user-detail">
-                            <i class="fas fa-phone"></i>
-                            <span>${userData.phone}</span>
-                        </div>
-                        <div class="user-detail">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${userData.address}</span>
-                        </div>
-                    `;
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        userInfo.innerHTML = `
+                            <div class="user-detail">
+                                <i class="fas fa-user"></i>
+                                <span>${userData.name}</span>
+                            </div>
+                            <div class="user-detail">
+                                <i class="fas fa-envelope"></i>
+                                <span>${userData.email}</span>
+                            </div>
+                            <div class="user-detail">
+                                <i class="fas fa-phone"></i>
+                                <span>${userData.phone}</span>
+                            </div>
+                            <div class="user-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${userData.address}</span>
+                            </div>
+                        `;
+                    } else {
+                        userInfo.innerHTML = '<p>لا توجد بيانات للمستخدم</p>';
+                    }
                     showPage(profilePage);
                 }, { onlyOnce: true });
             } else {
@@ -1037,6 +1107,16 @@
 
         // إغلاق صفحة التوثيق
         closeAuthBtn.addEventListener('click', () => {
+            showPage(homePage);
+        });
+
+        // إغلاق صفحة إضافة المنشور
+        closeAddPostBtn.addEventListener('click', () => {
+            showPage(homePage);
+        });
+
+        // إغلاق صفحة الملف الشخصي
+        closeProfileBtn.addEventListener('click', () => {
             showPage(homePage);
         });
 
